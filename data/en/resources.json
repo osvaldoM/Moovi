@@ -1,0 +1,16 @@
+{
+  "en":{
+"menu-collect": "Collect data",
+"menu-results": "Display results",
+"menu-help": "Help",
+"colaborators" : "Colaborators"
+
+  },
+  "pt":{
+"menu-collect": "Colher dados",
+"menu-results": "Ver resultados",
+"menu-help": "Ajuda",
+"colaborators" : "Colaboradores"
+
+  }
+}
