@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="my-divider">
+  <!-- Defines the element's style and local DOM -->
+  <template>
+    <style>
+     .divider{
+       display: block;
+       height: 1px;
+       background-color: rgba(0,0,0,.12);
+     }
+    </style>
+
+    <div class="divider"></div>
+  </template>
+  <!-- Creates the element's prototype and registers it -->
+  <script>
+    Polymer({
+      is: 'my-divider'
+    });
+  </script>
+</dom-module>

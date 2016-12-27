@@ -9,6 +9,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view1">
@@ -22,16 +28,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <div class="card">
-      <div class="circle">1</div>
-      <h1>View One</h1>
-      <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-      <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
+      {{localize('colaborators')}}
+      <iron-form class="" action="index.html" method="post">
+        <paper-dropdown-menu label="Your favourite pastry">
+           <paper-listbox class="dropdown-content">
+             <template is="dom-repeat" items="{{provinces}}">
+               <paper-item> {{item.name}}</paper-item>
+             </template>
+           </paper-listbox>
+        </paper-dropdown-menu>
+
+
+        <paper-input name="name" label="{{localize('province')}}"></paper-input>
+      </iron-form>
+
     </div>
   </template>
 
   <script>
     Polymer({
       is: 'my-view1',
+      behaviors: [
+        Polymer.AppLocalizeBehavior
+      ],
+      attached: function() {
+        console.log('localizing');
+        this.loadResources(this.resolveUrl('/data/en/resources.json'));
+      },
+        properties: {
+          language: {
+            value: 'pt'
+          },
+        },
+
+
+      ready: function(){
+        this.provinces=[
+  {
+    "_id": "58616d4dbe578a9e3c94173a",
+    "name": "Lucinda Mayo"
+  },
+  {
+    "_id": "58616d4d0c4b95cf001202f4",
+    "name": "Latasha Valentine"
+  },
+  {
+    "_id": "58616d4df1c03d7d7f2edf2f",
+    "name": "Andrea Mccormick"
+  },
+  {
+    "_id": "58616d4df8979ba57c9985a9",
+    "name": "Everett Good"
+  },
+  {
+    "_id": "58616d4d0dbb7dafeff3953b",
+    "name": "Osborn Russell"
+  },
+  {
+    "_id": "58616d4d6bab2643e2b6ab47",
+    "name": "Mcleod Stevenson"
+  }
+];
+      }
     });
   </script>
 </dom-module>

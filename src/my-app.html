@@ -22,8 +22,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="my-user.html">
 <link rel="import" href="my-icons.html">
-
 <dom-module id="my-app">
   <template>
     <style>
@@ -62,7 +63,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-align: center;
         font-size: 20px;
         display: inherit;
+        padding-right: 50px;
       }
+
+      .account-button {
+        --paper-icon-button: {
+            width: 54px;
+            height: 54px;
+          }
+        }
+
+        paper-dialog.size-position {
+          position: fixed;
+          top: 16px;
+          right: 16px;
+        //  width: 300px;
+        //  height: 300px;
+        //  overflow: auto;
+        }
     </style>
 
     <app-location route="{{route}}"></app-location>
@@ -96,6 +114,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                <paper-toggle-button on-change="_toggle" id="switch"></paper-toggle-button>
                <span title="Português">pt</span>
              </div>
+             <paper-icon-button class="account-button" on-tap="_openDialog" icon="my-icons:account-circle" title="account" ></paper-icon-button>
+             <paper-dialog id="position" class="size-position">
+                <my-user>
+                </my-user>
+              </paper-dialog>
           </app-toolbar>
         </app-header>
 
@@ -108,6 +131,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <my-view2 name="view2"></my-view2>
           <my-view3 name="view3"></my-view3>
           <my-colaborators name="colaborators" ></my-colaborators>
+          <my-user name= "loggedUser"></my-user>
           <my-view404 name="view404"></my-view404>
         </iron-pages>
       </app-header-layout>
@@ -139,6 +163,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.language = this.$.switch.checked ? 'pt' : 'en';
       }
       ,
+      _openDialog:function(){
+        this.$.position.open();
+      },
 
       observers: [
         '_routePageChanged(routeData.page)',
