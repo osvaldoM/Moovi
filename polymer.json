@@ -12,7 +12,7 @@
     "src/**/*",
     "images/**/*",
     "bower.json",
-    "data"
+    "data/**/*"
   ],
   "includeDependencies": [
     "manifest.json",

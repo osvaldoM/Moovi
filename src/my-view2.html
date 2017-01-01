@@ -9,9 +9,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <!-- <script src="https://cdn.vaadin.com/vaadin-core-elements/latest/webcomponentsjs/webcomponents-lite.min.js"></script> -->
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="elements/iron-grid/iron-grid.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view2">
@@ -22,19 +23,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         padding: 10px;
       }
+      .circle{
+        color: #4285f4
+      }
     </style>
+  <div class="">
+      <iron-grid>
+        <div class="s4">
+          <div class="card" style="width:100%">
+            <p>
+              <div class="circle">24</div>
+            </p>
+            Collected today
+          </div>
+        </div>
+        <div class="s4">
+          <div class="card "style="width:100%">
+            <p>
+              <div class="circle">76</div>
+            </p>
+                  Collected this week
+          </div>
+        </div>
+        <div class="s4">
+          <div class="card "style="width:100%">
+            <p>
+              <div class="circle">536 </div>
+            </p>
+                  Collected this month
+          </div>
+        </div>
+
+
+
+      </iron-grid>
+  </div>
+
+
 
     <div class="card">
-      <div class="circle">2</div>
+
       <h1>List of Collections </h1>
 
-
-      <vaadin-grid id="simple">
+<paper-input id="filter" label="Filter by first name"></paper-input>
+      <vaadin-grid selection-mode="multi" id="simple">
         <table>
           <colgroup>
-            <col name="firstName"/>
-            <col name="lastName"/>
-            <col name="email"/>
+            <col name="firstName" sortable/>
+            <col name="lastName" sortable/>
+            <col name="email" sortable/>
           </colgroup>
         </table>
       </vaadin-grid>
@@ -57,11 +94,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         console.log('ready');
         console.log(this);
           var grid = this.$.simple;
+          var users = [];
+
 
           getJSON('https://demo.vaadin.com/demo-data/1.0/people', function(json) {
-            grid.items = json.result;
+            users = json.result;
+            grid.items = users;
           });
-        //});
 
         function getJSON(url, callback) {
           var xhr = new XMLHttpRequest();
@@ -73,31 +112,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           xhr.open('GET', url, true);
           xhr.send();
         }
-      },
-      _that:function(){
-        console.log(this.$);
-        return this;
-      },
-      _populateGrid: function() {
-        //HTMLImports.whenReady(function() {
-        console.log(this);
-          var grid = this.$.simple;
 
-          getJSON('https://demo.vaadin.com/demo-data/1.0/people', function(json) {
-            grid.items = json.result;
-          });
-        //});
-
-        function getJSON(url, callback) {
-          var xhr = new XMLHttpRequest();
-          xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-              callback(JSON.parse(xhr.responseText));
+                grid.addEventListener('sort-order-changed', function() {
+          var sortOrder = grid.sortOrder[0];
+          var sortProperty = grid.columns[sortOrder.column].name;
+          var sortDirection = sortOrder.direction;
+          grid.items.sort(function(a, b) {
+            var res;
+            var path = sortProperty.split('.');
+            for (var i = 0; i < path.length; i++) {
+              a = a[path[i]];
+              b = b[path[i]];
             }
-          };
-          xhr.open('GET', url, true);
-          xhr.send();
-        }
+            if (!isNaN(a)) {
+              res = parseInt(a, 10) - parseInt(b, 10);
+            } else {
+              res = a.localeCompare(b);
+            }
+
+            if ('desc' === sortDirection) {
+              res *= -1;
+            }
+            return res;
+          });
+        });
+
+        //filtering options
+        var filterInput =  this.$.filter;
+filterInput.addEventListener('value-changed', function() {
+  var filterText = filterInput.value.toLowerCase();
+  grid.items = users.filter(function(val) {
+    if (filterText) {
+      return (val.firstName.toLowerCase()).indexOf(filterText) > -1;
+    } else {
+      return true;
+    }
+  });
+});
       }
     });
   </script>
