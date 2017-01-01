@@ -1,0 +1,18 @@
+<link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<script>
+    Polymer.MyappLangBehaviorImpl = {
+
+        // load localized messages
+        attached() {
+            this.loadResources(this.resolveUrl("../json/locales.json"));
+        },
+
+        langUpd(e, detail, sender){
+            this.language = detail;
+        },
+
+    };
+    Polymer.MyappLangBehavior = [ Polymer.AppLocalizeBehavior, Polymer.MyappLangBehaviorImpl ]
+
+</script>

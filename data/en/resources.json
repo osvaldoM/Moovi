@@ -1,6 +1,7 @@
 {
   "en":{
 "menu-collect": "Collect data",
+"head": "header info",
 "menu-results": "Display results",
 "menu-help": "Help",
 "colaborators" : "Colaborators",
@@ -8,6 +9,7 @@
 "district" : "district",
 "locality": "locality",
 "village" : "village",
+"household":"household",
 "household-code":"househould code ",
 "househould-head":"househould head",
 "gender": "gender",
@@ -23,8 +25,9 @@
 "name":"nome",
 "bornDate":"born date",
 "kinshipDegree":"degree of kinship",
-"Initiative":"Initiative"
-
+"Initiative":"Initiative",
+"male": "male",
+"female": "female"
   },
   "pt":{
 "menu-collect": "Colher dados",

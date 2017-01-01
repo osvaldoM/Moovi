@@ -11,7 +11,8 @@
   "sourceGlobs": [
     "src/**/*",
     "images/**/*",
-    "bower.json"
+    "bower.json",
+    "data"
   ],
   "includeDependencies": [
     "manifest.json",

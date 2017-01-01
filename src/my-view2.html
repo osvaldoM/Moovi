@@ -9,6 +9,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+
+<!-- <script src="https://cdn.vaadin.com/vaadin-core-elements/latest/webcomponentsjs/webcomponents-lite.min.js"></script> -->
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view2">
@@ -23,15 +26,79 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="card">
       <div class="circle">2</div>
-      <h1>View Two</h1>
-      <p>Ea duis bonorum nec, falli paulo aliquid ei eum.</p>
-      <p>Id nam odio natum malorum, tibique copiosae expetenda mel ea.Detracto suavitate repudiandae no eum. Id adhuc minim soluta nam.Id nam odio natum malorum, tibique copiosae expetenda mel ea.</p>
+      <h1>List of Collections </h1>
+
+
+      <vaadin-grid id="simple">
+        <table>
+          <colgroup>
+            <col name="firstName"/>
+            <col name="lastName"/>
+            <col name="email"/>
+          </colgroup>
+        </table>
+      </vaadin-grid>
+
+
+      <script>
+  //()();
+
+</script>
+
+
+
     </div>
   </template>
 
   <script>
     Polymer({
       is: 'my-view2',
+      ready: function() {
+        console.log('ready');
+        console.log(this);
+          var grid = this.$.simple;
+
+          getJSON('https://demo.vaadin.com/demo-data/1.0/people', function(json) {
+            grid.items = json.result;
+          });
+        //});
+
+        function getJSON(url, callback) {
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+              callback(JSON.parse(xhr.responseText));
+            }
+          };
+          xhr.open('GET', url, true);
+          xhr.send();
+        }
+      },
+      _that:function(){
+        console.log(this.$);
+        return this;
+      },
+      _populateGrid: function() {
+        //HTMLImports.whenReady(function() {
+        console.log(this);
+          var grid = this.$.simple;
+
+          getJSON('https://demo.vaadin.com/demo-data/1.0/people', function(json) {
+            grid.items = json.result;
+          });
+        //});
+
+        function getJSON(url, callback) {
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+              callback(JSON.parse(xhr.responseText));
+            }
+          };
+          xhr.open('GET', url, true);
+          xhr.send();
+        }
+      }
     });
   </script>
 </dom-module>

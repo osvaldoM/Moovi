@@ -11,10 +11,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+<link rel="import" href="elements/iron-grid/iron-grid.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view1">
@@ -26,23 +31,145 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 10px;
       }
     </style>
+  <iron-form class="" action="index.html" method="post">
+    <div class="card">
+      {{localize('head')}}
+
+        <iron-grid>
+          <div class="s4">
+            <paper-dropdown-menu label="{{localize('province')}}">
+               <paper-listbox class="dropdown-content">
+                 <template is="dom-repeat" items="{{provinces}}">
+                   <paper-item> {{item.name}}</paper-item>
+                 </template>
+               </paper-listbox>
+            </paper-dropdown-menu>
+
+          </div>
+          <div class="s4">
+            <paper-dropdown-menu label="{{localize('district')}}">
+               <paper-listbox class="dropdown-content">
+                 <template is="dom-repeat" items="{{provinces}}">
+                   <paper-item> {{item.name}}</paper-item>
+                 </template>
+               </paper-listbox>
+            </paper-dropdown-menu>
+
+          </div>
+          <div class="s4">
+            <paper-dropdown-menu label="{{localize('locality')}}">
+               <paper-listbox class="dropdown-content">
+                 <template is="dom-repeat" items="{{provinces}}">
+                   <paper-item> {{item.name}}</paper-item>
+                 </template>
+               </paper-listbox>
+            </paper-dropdown-menu>
+
+          </div>
+        </iron-grid>
+
+
+          <iron-grid>
+            <div class="s4">
+                      <paper-input name="name" label="{{localize('village')}}"></paper-input>
+            </div>
+            <div class="s4">
+                      <paper-input name="name" label="{{localize('househould-head')}}"></paper-input>
+            </div>
+            <div class="s4">
+                      <paper-input name="name" label="{{localize('code')}}"></paper-input>
+            </div>
+
+          </iron-grid>
+
+    </div>
 
     <div class="card">
-      {{localize('colaborators')}}
-      <iron-form class="" action="index.html" method="post">
-        <paper-dropdown-menu label="Your favourite pastry">
+          {{localize('househould-head')}}
+          <iron-grid>
+            <div class="s4">
+                <label id="label3">{{localize('househould-head','gender')}} {{localize('gender')}}</label>
+                <paper-radio-group allow-empty-selection aria-labelledby="label3">
+                  <paper-radio-button name="b"> {{localize('male')}}</paper-radio-button>
+                  <paper-radio-button name="d"> {{localize('female')}}</paper-radio-button>
+                </paper-radio-group>
+            </div>
+
+            <div class="s4">
+              <paper-checkbox>{{localize('hasId')}}</paper-checkbox>
+            </div>
+            <div class="s4">
+              <paper-checkbox>{{localize('hasDefficiency')}}</paper-checkbox>
+            </div>
+          </iron-grid>
+          <iron-grid>
+            <div class="s4">
+              <paper-checkbox>{{localize('hasReceiveAssistence')}}</paper-checkbox>
+            </div>
+            <div class="s4">
+              <paper-input name="name" label="{{localize('nrHouseholdMembers')}}"></paper-input>
+            </div>
+            <div class="s4">
+              <paper-input name="name" label="{{localize('househould-head')}} {{localize('age')}}" ></paper-input>
+            </div>
+            </iron-grid>
+            <iron-grid>
+              <div class="s4">
+                <paper-checkbox>{{localize('househouldHeadHasDefficiency')}}</paper-checkbox>
+              </div>
+            <div class="s4">
+              <paper-checkbox>{{localize('househouldHasSupport')}}</paper-checkbox>
+            </div>
+            <div class="s4">
+              <paper-checkbox>{{localize('isHouseholdMemberPartOfAssociation')}}</paper-checkbox>
+            </div>
+
+          </iron-grid>
+
+    </div>
+
+    <div class="card">
+      {{localize('household members')}}
+      <iron-grid>
+      <div class="s4">
+        <paper-input name="name" label="{{localize('name')}}"></paper-input>
+      </div>
+      <div class="s4">
+        <label id="label3">{{localize('househould-head','gender')}} {{localize('gender')}}</label>
+        <paper-radio-group allow-empty-selection aria-labelledby="label3">
+          <paper-radio-button name="b"> {{localize('male')}}</paper-radio-button>
+          <paper-radio-button name="d"> {{localize('female')}}</paper-radio-button>
+        </paper-radio-group>
+      </div>
+      <div class="s4">
+        <paper-input name="name" label="{{localize('age')}}"></paper-input>
+      </div>
+      </iron-grid>
+      <iron-grid>
+      <div class="s4">
+          <paper-input name="name" label="{{localize('kinship')}}"></paper-input>
+      </div>
+
+      <div class="s4">
+        <paper-checkbox>{{localize('hasId')}}</paper-checkbox>
+      </div>
+      <div class="s4">
+        <paper-dropdown-menu label="{{localize('Initiative')}}">
            <paper-listbox class="dropdown-content">
-             <template is="dom-repeat" items="{{provinces}}">
-               <paper-item> {{item.name}}</paper-item>
-             </template>
+               <paper-item> none</paper-item>
+               <paper-item> ECD</paper-item>
+               <paper-item> PROSAN</paper-item>
+                <paper-item> OVC</paper-item>
+                <paper-item> SANI</paper-item>
+                <paper-item> ProCAJU</paper-item>
            </paper-listbox>
         </paper-dropdown-menu>
 
-
-        <paper-input name="name" label="{{localize('province')}}"></paper-input>
-      </iron-form>
-
+      </div>
+      </iron-grid>
     </div>
+
+  </iron-form>
   </template>
 
   <script>
@@ -57,10 +184,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
         properties: {
           language: {
-            value: 'pt'
+            value: 'en'
           },
         },
-
 
       ready: function(){
         this.provinces=[
