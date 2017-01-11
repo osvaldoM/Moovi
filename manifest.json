@@ -3,8 +3,8 @@
   "short_name": "Carecollector",
   "start_url": "/?homescreen=1",
   "display": "standalone",
-  "theme_color": "#3f51b5",
-  "background_color": "#3f51b5",
+  "theme_color": "#ff9800",
+  "background_color": "#ff9800",
   "icons": [
     {
       "src": "images/care_logo.png",

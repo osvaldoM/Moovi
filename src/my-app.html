@@ -22,14 +22,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/note-app-elements/na-elements.html">
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+
+
+    <!-- firebase  -->
+    <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<!-- <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html"> -->
+<!-- <link rel="import" href="../bower_components/firebase-element-extended/firebase-profile.html"> -->
+
+    <firebase-app
+      name="Carecollector"
+      api-key= "AIzaSyDujYFzTFZMLx4nGQhuaW1Db9mxv6OADT4",
+      auth-domain= "care-dee4f.firebaseapp.com",
+      database-url= "https://care-dee4f.firebaseio.com",
+      storage-bucket= "care-dee4f.appspot.com",
+      messaging-sender-id= "1086772542952">
+
+    </firebase-app>
+
+
+
 <link rel="import" href="my-user.html">
 <link rel="import" href="my-icons.html">
 <dom-module id="my-app">
   <template>
+    <style include="note-app-shared-styles"></style>
     <style>
       :host {
-        --app-primary-color: #4285f4;
+        --app-primary-color: #ff9800;
         --app-secondary-color: black;
 
         display: block;
@@ -83,6 +105,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
     </style>
 
+    <!-- authentication -->
+
+    <firebase-auth
+    id="auth"
+    app-name="Carecollector"
+    provider="google"
+    signed-in="{{signedIn}}"
+    user="{{user}}">
+    </firebase-auth>
+
+    <!-- <firebase-query
+     id="query"
+     app-name="Carecollector"
+     path="/user/"
+     data="[[users]]">
+   </firebase-query> -->
+
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
@@ -90,17 +129,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
+        <na-login
+          id="login"
+          on-sign-in="signIn"
+          signed-in="[[signedIn]]"
+          disabled="[[!online]]">
+        </na-login>
+
+      <template id="main" >
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
+
       <app-drawer id="drawer">
-        <app-toolbar>Menu</app-toolbar>
+          <app-toolbar >Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">{{localize('menu-collect')}}</a>
+          <!-- <a name="view1" href="/view1">{{localize('menu-collect')}}</a> -->
           <a name="view2" href="/view2">{{localize('menu-results')}}</a>
           <a name="view3" href="/view3">{{localize('menu-help')}}</a>
           <a namme="Colaborators" href="/colaborators"> {{localize('colaborators')}}</a>
         </iron-selector>
       </app-drawer>
+
 
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
@@ -109,25 +158,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
             <div main-title>Carecollector</div>
-            <div class="lang" >
+        <!--    <div class="lang" >
                <span title="english">en</span>
                <paper-toggle-button on-change="_toggle" id="switch"></paper-toggle-button>
                <span title="Português">pt</span>
              </div>
-             <paper-icon-button class="account-button" on-tap="_openDialog" icon="my-icons:account-circle" title="account" ></paper-icon-button>
+              <paper-icon-button class="account-button" on-tap="_openDialog" icon="my-icons:account-circle" title="account" ></paper-icon-button>
              <paper-dialog id="position" class="size-position">
                 <my-user>
-                </my-user>
+                </my-user> -->
               </paper-dialog>
+              <na-toolbar
+              signed-in="[[signedIn]]"
+              on-sign-out="signOut">
+
+              </na-toolbar>
           </app-toolbar>
         </app-header>
+
 
         <iron-pages
             selected="[[page]]"
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <my-view1 name="view1"></my-view1>
+          <!-- <my-view1 name="view1"></my-view1> -->
           <my-view2 name="view2"></my-view2>
           <my-view3 name="view3"></my-view3>
           <my-colaborators name="colaborators" ></my-colaborators>
@@ -138,14 +193,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-drawer-layout>
   </template>
 
+  </template>
+
   <script>
     Polymer({
       is: 'my-app',
       behaviors: [
-        Polymer.AppLocalizeBehavior
+        Polymer.AppLocalizeBehavior,
+        Polymer.NoteAppBehavior,
       ],
+      signIn: function() {
+        console.log(this.$.login.$);
+        var that=this;
+        this.$.auth.signInWithEmailAndPassword(this.$.login.$.username.value,this.$.login.$.password.value).then(function(res){
+          this.$.login.$.username.value = null;
+          this.$.login.$.password.value = null;
+          that.$.login.error=null;
+          console.log(res);
+        }).catch(function(err){
+          console.log('there was an error '+err);
+          that.$.login.error=err;
+          console.log('ook'+that.$.login.error);
+        });
+      },
+      createUser: function(email, password){
+        createUserWithEmailAndPassword(email, password);
+      },
     attached: function() {
       console.log('localizing');
+      //console.log(this.$.query.app)
       this.loadResources(this.resolveUrl('/data/en/resources.json'));
     },
       properties: {
@@ -155,14 +231,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           observer: '_pageChanged',
         },
         language: {
-          value: 'en'
+          value: 'pt'
         },
       },
 
       _toggle: function() {
-        this.language = this.$.switch.checked ? 'pt' : 'en';
-      }
-      ,
+        this.language = this.$$('#switch').checked ? 'pt' : 'en';
+      },
       _openDialog:function(){
         this.$.position.open();
         console.log(this.$);
@@ -173,15 +248,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
 
       _routePageChanged: function(page) {
-        this.page = page || 'view1';
-
-        if (!this.$.drawer.persistent) {
-          this.$.drawer.close();
-        }
+        this.page = page || 'view2';
+        if(this.$.drawer!=null){
+          if (!this.$.drawer.persistent) {
+            this.$.drawer.close();
+          }
+      }
       },
 
       _pageChanged: function(page) {
         // Load page import on demand. Show 404 page if fails
+        if(page== null)
+          console.log('null page');
+        else
         var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
         this.importHref(resolvedPageUrl, null, this._showPage404, true);
       },

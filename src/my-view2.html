@@ -12,8 +12,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <!-- <script src="https://cdn.vaadin.com/vaadin-core-elements/latest/webcomponentsjs/webcomponents-lite.min.js"></script> -->
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
 <link rel="import" href="elements/iron-grid/iron-grid.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 
 <dom-module id="my-view2">
   <template>
@@ -27,7 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: #4285f4
       }
     </style>
-  <div class="">
+  <!-- <div class="">
       <iron-grid>
         <div class="s4">
           <div class="card" style="width:100%">
@@ -57,7 +59,61 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
       </iron-grid>
+  </div> -->
+  <div class="">
+    <h3> Filter data</h3>
+      <iron-grid>
+        <div class="s4">
+          <div class="card" style="width:100%">
+            <paper-input id="filterProvince" label="Filtrar por provincia"></paper-input>
+          </div>
+        </div>
+          <div class="s4">
+            <div class="card" style="width:100%">
+              <paper-input id="filterLocality" label="Filtrar por localidade"></paper-input>
+            </div>
+          </div>
+
+          <div class="s4">
+            <div class="card" style="width:100%">
+              <paper-input id="filterCollector" label="Filtrar por colector de dados"></paper-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="s4">
+          <div class="card" >
+            <div>
+              <h3> selccionar periodo </h3>
+                <iron-grid>
+                    <div class="s4">
+                      <vaadin-date-picker label="inicio">
+                    </div>
+
+                      <div class="s4">
+                        <vaadin-date-picker label="fim">
+                      </div>
+
+                </iron-grid>
+
+          </div>
+
+
+        </div>
+      </div>
+
+
+      </iron-grid>
   </div>
+
+
+  <firebase-query
+    id="query"
+    app-name="Carecollector"
+    path="{{path}}"
+    data="{{households}}"
+    log="true">
+  </firebase-query>
 
 
 
@@ -65,14 +121,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <h1>List of Collections </h1>
 
-<paper-input id="filter" label="Filter by first name"></paper-input>
-      <vaadin-grid selection-mode="multi" id="simple">
+<!-- <paper-input id="filter" label="Filter by first name"></paper-input> -->
+      <vaadin-grid selection-mode="multi" items="{{households}}" id="simple">
         <table>
           <colgroup>
-            <col name="firstName" sortable/>
-            <col name="lastName" sortable/>
-            <col name="email" sortable/>
+            <col name="$key" sortable/>
+            <col name="provincia" sortable/>
+            <col name="localidade" sortable/>
+            <col name="oficial" sortable/>
+            <col name="data" sortable/>
           </colgroup>
+          <thead>
+        <tr>
+          <th>ID</th>
+          <th>Provincia</th>
+          <th>Localidade</th>
+          <th>Email Oficial</th>
+          <th>Data e hora</th>
+        </tr>
+        </thead>
         </table>
       </vaadin-grid>
 
@@ -90,28 +157,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'my-view2',
+      properties:{
+        househoulds: {
+          type: Array,
+          notify:true,
+          observer: 'dataChanged'
+        },
+        path:{
+          type: String,
+          value:'households'
+        }
+      } ,
       ready: function() {
         console.log('ready');
-        console.log(this);
           var grid = this.$.simple;
-          var users = [];
+          var users = this.households;
 
-
-          getJSON('https://demo.vaadin.com/demo-data/1.0/people', function(json) {
-            users = json.result;
-            grid.items = users;
-          });
-
-        function getJSON(url, callback) {
-          var xhr = new XMLHttpRequest();
-          xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-              callback(JSON.parse(xhr.responseText));
-            }
-          };
-          xhr.open('GET', url, true);
-          xhr.send();
-        }
 
                 grid.addEventListener('sort-order-changed', function() {
           var sortOrder = grid.sortOrder[0];
@@ -138,17 +199,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         //filtering options
-        var filterInput =  this.$.filter;
-filterInput.addEventListener('value-changed', function() {
-  var filterText = filterInput.value.toLowerCase();
-  grid.items = users.filter(function(val) {
-    if (filterText) {
-      return (val.firstName.toLowerCase()).indexOf(filterText) > -1;
-    } else {
-      return true;
-    }
-  });
-});
+        var filterInput =  this.$.filterProvince;
+          filterInput.addEventListener('value-changed', function() {
+            var filterText = filterInput.value.toLowerCase();
+            grid.items = users.filter(function(val) {
+              if (filterText) {
+                return (val.provincia.toLowerCase()).indexOf(filterText) > -1;
+              } else {
+                return true;
+              }
+            });
+          });
+
+          var filterLocality =  this.$.filterLocality;
+            filterLocality.addEventListener('value-changed', function() {
+              var filterText = filterLocality.value.toLowerCase();
+              grid.items = users.filter(function(val) {
+                if (filterText) {
+                  return (val.localidade.toLowerCase()).indexOf(filterText) > -1;
+                } else {
+                  return true;
+                }
+              });
+            });
+
+            var filterCollector =  this.$.filterCollector;
+              filterCollector.addEventListener('value-changed', function() {
+                var filterText = filterCollector.value.toLowerCase();
+                grid.items = users.filter(function(val) {
+                  if (filterText) {
+                    return (val.oficial.toLowerCase()).indexOf(filterText) > -1;
+                  } else {
+                    return true;
+                  }
+                });
+              });
+
       }
     });
   </script>

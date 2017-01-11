@@ -1,0 +1,85 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="elements/iron-grid/iron-grid.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="user-editor">
+  <!-- Defines the element's style and local DOM -->
+  <template>
+    <style>
+      :host {
+        display: block;
+
+        padding: 16px;
+
+      }
+      paper-button{
+        background-color: var(--app-primary-color);
+        color: #fff;
+
+      }
+    </style>
+
+     <firebase-document
+      id="household"
+      app-name="Carecollector"
+      path="/household"
+      data="{{user}}"
+      log="true">
+
+    </firebase-document>
+
+    <div class="card" style="margin:50px">
+
+      <iron-form id="userForm">
+        <paper-input id="username" name="username" error-message="Invalid email!" label="Email address" value="{{user}}.full_name">
+        </paper-input>
+        <paper-input id="password" name="password" label="password">
+        </paper-input>
+        <paper-dropdown-menu id="type" label="type">
+           <paper-listbox class="dropdown-content">
+               <paper-item> admin</paper-item>
+               <paper-item>data analyst</paper-item>
+               <paper-item> data Collector</paper-item>
+           </paper-listbox>
+        </paper-dropdown-menu>
+        <p>
+          <paper-button blue raised onclick="submitForm()"> Add user</paper-button></paper-button>
+        </p>
+      </iron-form>
+    </div>
+
+  </template>
+  <!-- Creates the element's prototype and registers it -->
+  <script>
+    Polymer({
+      is: 'user-editor',
+      properties:{
+        user:{
+          type:Object,
+          observer:'dataChanged',
+          notify:true,
+          value:{
+            provincia:"nampula",
+            localidade:"funhalouro",
+            oficial:"223642642",
+            data: function(){return new Date();}
+          }
+        }
+      },
+      dataChanged: function(){
+        console.log('data changed');
+        console.log(this.user.nickname );
+      },
+      save:function(){
+        this.$.househould.save().then(function(res){
+          console.log(res);
+        })
+      }
+    });
+  </script>
+</dom-module>

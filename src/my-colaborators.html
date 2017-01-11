@@ -1,5 +1,17 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+
+<!--
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html"> -->
+<script src="../bower_components/moment/moment.js"></script>
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="user-editor.html">
 
 <dom-module id="my-colaborators">
   <!-- Defines the element's style and local DOM -->
@@ -13,11 +25,108 @@
     </style>
 
     <h1> Colaboradores</h1>
+
+    <!-- <paper-fab on-tap="_addUser" icon="add" title="heart"></paper-fab> -->
+
+    <paper-fab on-tap="save" icon="add" title="heart"></paper-fab>
+
+
+    <paper-dialog id="addUserDialog" class="" modal="true">
+      <user-editor>
+      </user-editor>
+
+      <div class="buttons">
+        <paper-button dialog-confirm autofocus>close</paper-button>
+      </div>
+     </paper-dialog>
+
+      <firebase-query
+        id="query"
+        app-name="Carecollector"
+        path="/users"
+        data="{{users}}"
+        log="true">
+      </firebase-query>
+
+      <firebase-document
+       id="household"
+       app-name="Carecollector"
+       path="{{household}}"
+       data="{{user}}"
+       log="true">
+
+     </firebase-document>
+
+
+
+    <div class="notes">
+      <template is="dom-repeat" items="[[users]]" as="note">
+        <span>
+            aa "{{note.full_name}}"
+        </span>
+      </template>
+    </div>
+
   </template>
   <!-- Creates the element's prototype and registers it -->
   <script>
+  var ahm=[];
     Polymer({
-      is: 'my-colaborators'
+      is: 'my-colaborators',
+
+      _addUser:function(){
+        var body = document.querySelector('body');
+        Polymer.dom(body).appendChild(this.$.addUserDialog);
+        this.$.addUserDialog.open();
+      },
+      properties:{
+        path:{
+          type: String,
+          value:'households'
+        },
+        users: {
+          type: Array,
+      //    value: function() {return [];},
+          observer: 'dataChanged'
+        },
+        user:{
+          type:Object,
+          observer:'dataChanged',
+          notify:true,
+          value:function(){
+            return {
+              provincia:"nampula",
+              localidade:"funhalouro",
+              oficial:"223642642",
+              data: (function(){ var date = new Date();
+                                  var n = date.toDateString();
+                                  var time = date.toLocaleTimeString();
+                                  var mom=moment().format('M/D/YYYY, h:mm:ssa');
+                                  return mom+''})()
+            };
+          }
+        }
+      },
+      dataChanged: function() {
+
+      },
+      attached: function() {
+        console.log('user');
+        console.log(this.user);
+      },
+      save:function(){
+        var that=this;
+        this.$.household.save(this.path).then(function(res){
+          console.log(res);
+          console.log(that.user);
+          console.log(that.path);
+        });
+      }
+
+
+
+
+
     });
   </script>
 </dom-module>
