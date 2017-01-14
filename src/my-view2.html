@@ -147,6 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app-name="Carecollector"
     path="{{path}}"
     data="{{households}}"
+
     >
   </firebase-query>
 
@@ -161,10 +162,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <table>
           <colgroup>
             <col name="$key" sortable/>
-            <col name="provincia" sortable/>
-            <col name="localidade" sortable/>
-            <col name="oficial" sortable/>
-            <col name="data" sortable/>
+            <col name="province" sortable/>
+            <col name="locality" sortable/>
+            <col name="collector_id" sortable/>
+            <col name="timestamp" sortable/>
             <col />
           </colgroup>
           <thead>
@@ -174,9 +175,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <th>Localidade</th>
           <th>Email Oficial</th>
           <th>Data e hora</th>
-          <th>Accoes</th>
+          <th>Ac&ccedil;&otilde;es</th>
         </tr>
         </thead>
+      <!-- <vaadin-grid-column-group>
+        <vaadin-grid-column>
+          <template class="header">ID</template>
+          <template>[[item.$key]]</template>
+        </vaadin-grid-column>
+        <vaadin-grid-column>
+          <template class="header">Provincia</template>
+          <template>[[item.province]]</template>
+        </vaadin-grid-column>
+        <vaadin-grid-column>
+          <template class="header">Localidade</template>
+          <template>[[item.locality]]</template>
+        </vaadin-grid-column>
+        <vaadin-grid-column>
+          <template class="header">Email Oficial</template>
+          <template>[[item.collector_id]]</template>
+        </vaadin-grid-column>
+        <vaadin-grid-column>
+          <template class="header">Data e hora</template>
+          <template>[[item.timestamp]]</template>
+        </vaadin-grid-column>
+        <vaadin-grid-column>
+          <template class="header">Ac&ccedil;&otilde;es</template>
+          <template>[[item.province]]</template>
+        </vaadin-grid-column>
+      </vaadin-grid-column-group> -->
+
+
+
         </table>
       </vaadin-grid>
 
@@ -203,7 +233,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         path:{
           type: String,
-          value:'households'
+          value:'house_holds'
         },
         selectedCollection:{
           type:Object,
@@ -301,7 +331,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               var filterText = filterInputC.value.toLowerCase();
               grid.items = households.filter(function(val) {
                 if (filterText) {
-                  return (val.provincia.toLowerCase()).indexOf(filterText) > -1;
+                  return (val.province.toLowerCase()).indexOf(filterText) > -1;
                 } else {
                   return true;
                 }
@@ -313,7 +343,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               var filterText = filterLocality.value.toLowerCase();
               grid.items = households.filter(function(val) {
                 if (filterText) {
-                  return (val.localidade.toLowerCase()).indexOf(filterText) > -1;
+                  return (val.locality.toLowerCase()).indexOf(filterText) > -1;
                 } else {
                   return true;
                 }
@@ -325,7 +355,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var filterText = filterCollector.value.toLowerCase();
                 grid.items = households.filter(function(val) {
                   if (filterText) {
-                    return (val.oficial.toLowerCase()).indexOf(filterText) > -1;
+                    return (val.collector_id.toLowerCase()).indexOf(filterText) > -1;
                   } else {
                     return true;
                   }
