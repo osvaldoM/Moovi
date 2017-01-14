@@ -11,11 +11,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <!-- <script src="https://cdn.vaadin.com/vaadin-core-elements/latest/webcomponentsjs/webcomponents-lite.min.js"></script> -->
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 <link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
 <link rel="import" href="elements/iron-grid/iron-grid.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="collection-details.html">
 
 <dom-module id="my-view2">
   <template>
@@ -28,7 +32,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .circle{
         color: #4285f4
       }
+
+      vaadin-grid {
+        -moz-user-select: text;
+        user-select: text;
+        -ms-user-select: text;
+      }
     </style>
+
+    <paper-dialog id="detailsDialog" class="" modal="true">
+      <collection-details data="{{selectedCollection}}">
+      </collection-details>
+
+      <div class="buttons">
+        <paper-button dialog-confirm autofocus>close</paper-button>
+      </div>
+     </paper-dialog>
+
   <!-- <div class="">
       <iron-grid>
         <div class="s4">
@@ -60,17 +80,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       </iron-grid>
   </div> -->
-  <div class="">
+  <div class="card">
     <h3> Filter data</h3>
+
       <iron-grid>
         <div class="s4">
           <div class="card" style="width:100%">
-            <paper-input id="filterProvince" label="Filtrar por provincia"></paper-input>
+            <!-- <paper-input id="filterProvince" label="Filtrar por provincia"></paper-input> -->
+            <vaadin-combo-box
+              id="filterProvinceC"
+              label="Element"
+              items='["nampula", "maputo", "cabo delgado", "niassa", "zambezia", "tete","sofala","manica","gaza","inhambane"]'
+              value="Bromine">
+            </vaadin-combo-box>
           </div>
+
         </div>
           <div class="s4">
             <div class="card" style="width:100%">
-              <paper-input id="filterLocality" label="Filtrar por localidade"></paper-input>
+              <!-- <paper-input id="filterLocality" label="Filtrar por localidade"></paper-input> -->
+              <vaadin-combo-box
+                id="filterLocality"
+                label="Filtrar por localidade"
+                items='["funhalouro", "taqaza", "mulocue", "chibabava", "capita", "tete","sofala","manica","gaza","inhambane"]'
+                value="Bromine">
+              </vaadin-combo-box>
             </div>
           </div>
 
@@ -79,9 +113,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-input id="filterCollector" label="Filtrar por colector de dados"></paper-input>
             </div>
           </div>
-        </div>
-
-        <div class="s4">
+        </iron-grid>
+        <iron-grid>
+        <div class="s12">
           <div class="card" >
             <div>
               <h3> selccionar periodo </h3>
@@ -104,7 +138,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
       </iron-grid>
-  </div>
+    </div>
+
 
 
   <firebase-query
@@ -112,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app-name="Carecollector"
     path="{{path}}"
     data="{{households}}"
-    log="true">
+    >
   </firebase-query>
 
 
@@ -122,7 +157,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <h1>List of Collections </h1>
 
 <!-- <paper-input id="filter" label="Filter by first name"></paper-input> -->
-      <vaadin-grid selection-mode="multi" items="{{households}}" id="simple">
+      <vaadin-grid selection.selected="{{selectedCollection}}"  items="{{households}}" id="simple">
         <table>
           <colgroup>
             <col name="$key" sortable/>
@@ -130,6 +165,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <col name="localidade" sortable/>
             <col name="oficial" sortable/>
             <col name="data" sortable/>
+            <col />
           </colgroup>
           <thead>
         <tr>
@@ -138,6 +174,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <th>Localidade</th>
           <th>Email Oficial</th>
           <th>Data e hora</th>
+          <th>Accoes</th>
         </tr>
         </thead>
         </table>
@@ -161,18 +198,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         househoulds: {
           type: Array,
           notify:true,
-          observer: 'dataChanged'
+          observer: 'dataChanged',
+          computed:'_updateHouseholds(household)'
         },
         path:{
           type: String,
           value:'households'
+        },
+        selectedCollection:{
+          type:Object,
+          notify:true,
+          value:function(){
+            return {nome:'hello man'};
+          }
         }
-      } ,
-      ready: function() {
-        console.log('ready');
-          var grid = this.$.simple;
-          var users = this.households;
+      },
+     _details:function(window){
+       //had to wait 100ms bcoz clicked row fires  the selected  event before updating selectedIndex
+      var that=this;
+       window.setTimeout(function(){
+         console.log(that);
+         var selectedIndex=that.$.simple.selection.selected();
+         that.selectedCollection=that.households[selectedIndex]
+         var body = document.querySelector('body');
+         Polymer.dom(body).appendChild(that.$.detailsDialog);
+         that.$.detailsDialog.open();
+       },100)
 
+     },
+
+      updateHouseholds: function(household){
+        console.log('hh'+household)
+      },
+      ready: function() {
+          var grid = this.$.simple;
+          var households = this.households;
+          var that=this;
+          grid.then(function(){
+
+                      grid.columns[5].renderer = function(cell) {
+                          if (cell.element.childNodes.length === 0) {
+                            var button = document.createElement('paper-button');
+                            button.innerHTML = 'Detalhes';
+                            button.raised="true";
+                            button.style="background-color:#ff9500;color:#ffffff;"
+                            //console.log('lohhing this');
+                            //console.log(this);
+                            button.addEventListener('click',that._details.bind(that,window))
+                            cell.element.appendChild(button);
+
+                            var el = cell.element;
+                            var data = cell.data;
+
+                            // button.addEventListener('click', function() {
+                            //   var div = document.createElement('div');
+                            //   div.innerHTML = data;
+                            //   el.appendChild(div);
+                            // });
+                          }
+                        };
+          })
 
                 grid.addEventListener('sort-order-changed', function() {
           var sortOrder = grid.sortOrder[0];
@@ -199,22 +284,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         //filtering options
-        var filterInput =  this.$.filterProvince;
-          filterInput.addEventListener('value-changed', function() {
-            var filterText = filterInput.value.toLowerCase();
-            grid.items = users.filter(function(val) {
-              if (filterText) {
-                return (val.provincia.toLowerCase()).indexOf(filterText) > -1;
-              } else {
-                return true;
-              }
+        // var filterInput =  this.$.filterProvince;
+        //   filterInput.addEventListener('value-changed', function() {
+        //     var filterText = filterInput.value.toLowerCase();
+        //     grid.items = households.filter(function(val) {
+        //       if (filterText) {
+        //         return (val.provincia.toLowerCase()).indexOf(filterText) > -1;
+        //       } else {
+        //         return true;
+        //       }
+        //     });
+        //   });
+
+          var filterInputC =  this.$.filterProvinceC;
+            filterInputC.addEventListener('value-changed', function() {
+              var filterText = filterInputC.value.toLowerCase();
+              grid.items = households.filter(function(val) {
+                if (filterText) {
+                  return (val.provincia.toLowerCase()).indexOf(filterText) > -1;
+                } else {
+                  return true;
+                }
+              });
             });
-          });
 
           var filterLocality =  this.$.filterLocality;
             filterLocality.addEventListener('value-changed', function() {
               var filterText = filterLocality.value.toLowerCase();
-              grid.items = users.filter(function(val) {
+              grid.items = households.filter(function(val) {
                 if (filterText) {
                   return (val.localidade.toLowerCase()).indexOf(filterText) > -1;
                 } else {
@@ -226,7 +323,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var filterCollector =  this.$.filterCollector;
               filterCollector.addEventListener('value-changed', function() {
                 var filterText = filterCollector.value.toLowerCase();
-                grid.items = users.filter(function(val) {
+                grid.items = households.filter(function(val) {
                   if (filterText) {
                     return (val.oficial.toLowerCase()).indexOf(filterText) > -1;
                   } else {

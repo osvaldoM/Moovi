@@ -1,0 +1,74 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="elements/iron-grid/iron-grid.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="shared-styles.html">
+
+
+<dom-module id="collection-details">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+
+
+      <firebase-query
+        id="query"
+        app-name="Carecollector"
+        path="{{path}}"
+        data="{{members}}"
+        >
+      </firebase-query>
+
+      <h1>details for Collection {{data.$key}} </h1>
+      <iron-grid>
+        <div class="s6">
+      <paper-listbox selected="0">
+        <paper-item>id : {{data.$key}}</paper-item>
+        <paper-item>Provincia : {{data.provincia}}</paper-item>
+        <paper-item>Localidade {{data.localidade}} </paper-item>
+        <paper-item>Oficial : {{data.oficial}}</paper-item>
+        <paper-item>Data {{data.data}} </paper-item>
+
+      </paper-listbox>
+        </div>
+        <div class="s6">
+          <paper-listbox selected="0">
+          <paper-item>id : {{data.$key}}</paper-item>
+          <paper-item>Provincia : {{data.provincia}}</paper-item>
+          <paper-item>Localidade {{data.localidade}} </paper-item>
+          <paper-item>Oficial : {{data.oficial}}</paper-item>
+          <paper-item>Data {{data.data}} </paper-item>
+          </paper-listbox>
+        </div>
+      </iron-grid>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'collection-details',
+      properties:{
+        data:{
+          type:Object,
+        notify:true
+      },
+      path:{
+        type: String,
+        value:'members'
+      },
+    },
+    attached:function(){
+      console.log('aa'+this.data.provincia);
+    }
+    });
+  </script>
+</dom-module>

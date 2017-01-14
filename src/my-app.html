@@ -24,6 +24,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/note-app-elements/na-elements.html">
 <link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 
     <!-- firebase  -->
@@ -115,6 +116,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     user="{{user}}">
     </firebase-auth>
 
+    <iron-meta key="userData" value="{{user}}"></iron-meta>
+
     <!-- <firebase-query
      id="query"
      app-name="Carecollector"
@@ -136,7 +139,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           disabled="[[!online]]">
         </na-login>
 
-      <template id="main" >
+      <template id="main" is="dom-if" if="[[signedIn]]">
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
 
@@ -203,24 +206,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.NoteAppBehavior,
       ],
       signIn: function() {
-        console.log(this.$.login.$);
         var that=this;
         this.$.auth.signInWithEmailAndPassword(this.$.login.$.username.value,this.$.login.$.password.value).then(function(res){
           this.$.login.$.username.value = null;
           this.$.login.$.password.value = null;
           that.$.login.error=null;
-          console.log(res);
         }).catch(function(err){
-          console.log('there was an error '+err);
           that.$.login.error=err;
-          console.log('ook'+that.$.login.error);
         });
       },
       createUser: function(email, password){
         createUserWithEmailAndPassword(email, password);
       },
     attached: function() {
-      console.log('localizing');
       //console.log(this.$.query.app)
       this.loadResources(this.resolveUrl('/data/en/resources.json'));
     },
@@ -240,7 +238,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _openDialog:function(){
         this.$.position.open();
-        console.log(this.$);
       },
 
       observers: [

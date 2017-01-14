@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <!--
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
@@ -22,7 +23,14 @@
 
         padding: 16px;
       }
+      vaadin-grid {
+        -moz-user-select: text;
+        user-select: text;
+        -ms-user-select: text;
+      }
     </style>
+
+  <iron-meta id="meta"></iron-meta>
 
     <h1> Colaboradores</h1>
 
@@ -40,12 +48,18 @@
       </div>
      </paper-dialog>
 
+     <firebase-auth
+     user="{{currentUser}}"
+      >
+     </firebase-auth>
+
       <firebase-query
         id="query"
         app-name="Carecollector"
         path="/users"
         data="{{users}}"
-        log="true">
+        log="true"
+        >
       </firebase-query>
 
       <firebase-document
@@ -53,7 +67,8 @@
        app-name="Carecollector"
        path="{{household}}"
        data="{{user}}"
-       log="true">
+       log="true"
+      >
 
      </firebase-document>
 
@@ -84,6 +99,11 @@
           type: String,
           value:'households'
         },
+        currentUser:{
+          type: Object,
+          notify:true,
+          observer:'userChanged'
+        },
         users: {
           type: Array,
       //    value: function() {return [];},
@@ -95,14 +115,14 @@
           notify:true,
           value:function(){
             return {
-              provincia:"nampula",
-              localidade:"funhalouro",
-              oficial:"223642642",
-              data: (function(){ var date = new Date();
-                                  var n = date.toDateString();
-                                  var time = date.toLocaleTimeString();
-                                  var mom=moment().format('M/D/YYYY, h:mm:ssa');
-                                  return mom+''})()
+              // provincia:"nampula",
+              // oficial:"Hwgg4N4n6UNAvHQq30HWTt1znM72",
+              // localidade:"funhalouro",
+              // data: (function(){ var date = new Date();
+              //                     var n = date.toDateString();
+              //                     var time = date.toLocaleTimeString();
+              //                     var mom=moment().format('M/D/YYYY, h:mm:ssa');
+              //                     return mom+''})()
             };
           }
         }
@@ -110,17 +130,38 @@
       dataChanged: function() {
 
       },
+      userChanged:function(){
+        console.log('data changed');
+        console.log(this.currentUser);
+      },
       attached: function() {
-        console.log('user');
-        console.log(this.user);
+        console.log(this.$.meta)
+        console.log(this.$.meta.byKey('userData'));
+        console.log(this.currentUser);
       },
       save:function(){
         var that=this;
+        this.$.household.data={
+          provincia:"nampula",
+          oficial:this.$.meta.byKey('userData').uid,
+          localidade:"funhalouro",
+          data: (function(){ var date = new Date();
+                              var n = date.toDateString();
+                              var time = date.toLocaleTimeString();
+                              var mom=moment().format('M/D/YYYY, h:mm:ssa');
+                              return mom+''})()
+        };
         this.$.household.save(this.path).then(function(res){
-          console.log(res);
-          console.log(that.user);
-          console.log(that.path);
+          // console.log(res);
+          // console.log(that.user);
+          // console.log(that.$.auth.user)
         });
+      },
+      getCurrentUser:function(){
+        console.log('getting user');
+        console.log(this.$.meta.byKey('userData'));
+        console.log(this.$.meta.byKey('userData'));
+        return this.$.meta.byKey('userData');
       }
 
 
