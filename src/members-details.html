@@ -62,7 +62,7 @@
               É deficiente
             </th>
             <th>
-               
+
             </th>
         </tr>
         <template is="dom-repeat" items="{{loadedMembers}}">
@@ -130,22 +130,14 @@
         console.log('loaded'+this.loadedMembers);
         var obj=this.members;
         var that=this;
-        for(let member in obj){
-          if (obj.hasOwnProperty(member)) {
-              //use query.db here
-              console.log(this.path+member);
+        for(let member in obj)
+        {
+          if (obj.hasOwnProperty(member))
+          {
               this.$.query.db.ref(this.path+member).once('value').then(function(snapshot) {
-                  that.push('loadedMembers',snapshot.val());
-                // ...
-              });
+              that.push('loadedMembers',snapshot.val());
 
-              // this.$.query.ref.once('value').then(function(snapshot) {
-              //     console.log(snapshot.name);
-              //   // ...
-              // });
-              // this.$.query.save(this.path+'/'+member)
-              // console.log(this.path+'/'+member);
-              //doc.save('/users/' + this.user.uid + '/models');
+              });
           }
         }
       },
