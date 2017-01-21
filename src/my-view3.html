@@ -9,7 +9,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../bower_components/vaadin-grid-v2/vaadin-grid.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="elements/iron-grid/iron-grid.html">
+<link rel="import" href="collection-details.html">
 <link rel="import" href="shared-styles.html">
+<script src="../bower_components/moment/moment.js"></script>
 
 <dom-module id="my-view3">
   <template>
@@ -19,19 +25,212 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         padding: 10px;
       }
+
+      vaadin-grid#material {
+
+      font-family: Roboto, sans-serif;
+      --divider-color: rgba(0, 0, 0, var(--dark-divider-opacity));
+
+      --vaadin-grid-cell: {
+        padding: 0;
+      };
+
+      --vaadin-grid-header-cell: {
+        height: 64px;
+        color: rgba(0, 0, 0, var(--dark-secondary-opacity));
+        font-size: 12px;
+      };
+
+      --vaadin-grid-body-cell: {
+        height: 48px;
+        color: rgba(0, 0, 0, var(--dark-primary-opacity));
+        font-size: 13px;
+      };
+
+      --vaadin-grid-body-row-hover-cell: {
+        background-color: var(--paper-grey-200);
+      };
+
+      --vaadin-grid-body-row-selected-cell: {
+        background-color: var(--paper-grey-100);
+      };
+
+    }
+
+    vaadin-grid#material .cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 56px;
+    }
+
+    vaadin-grid#material .cell.last {
+      padding-right: 24px;
+    }
+
+    vaadin-grid#material .cell.numeric {
+      text-align: right;
+    }
+
+    vaadin-grid#material paper-checkbox {
+      --primary-color: var(--paper-indigo-500);
+      margin: 0 24px;
+    }
+
+    vaadin-grid#material vaadin-grid-sorter {
+      --vaadin-grid-sorter-arrow: {
+        display: none !important;
+      };
+    }
+
+    vaadin-grid#material vaadin-grid-sorter .cell {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    vaadin-grid#material vaadin-grid-sorter iron-icon {
+      transform: scale(0.8) translateZ(0);
+      transition: all 0.3s;
+    }
+
+    vaadin-grid#material vaadin-grid-sorter:not([direction]) iron-icon {
+      color: rgba(0, 0, 0, var(--dark-disabled-opacity));
+    }
+
+    vaadin-grid#material vaadin-grid-sorter[direction] {
+      color: rgba(0, 0, 0, var(--dark-primary-opacity));
+    }
+
+    vaadin-grid#material vaadin-grid-sorter[direction=desc] iron-icon {
+      transform: scale(0.8) rotate(180deg) translateZ(0);
+    }
+
+    #grid-row-details .details {
+      padding: 10px;
+      margin: 10px;
+      /*display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14);*/
+      font-size: 20px;
+    }
+    /*#grid-row-details img {
+      width: 80px;
+      height: 80px;
+    }*/
+    #grid-row-details {
+      --primary-color: #00b4f0;
+      --paper-font-common-base: {
+        font-family: var(--font-family);
+        font-size: 14px;
+      };
+
+      vaadin-grid input{
+        width: 100%;
+      }
     </style>
 
+
+    <firebase-query
+      id="query"
+      app-name="Carecollector"
+      path="{{path}}"
+      data="{{dataSource}}"
+      log
+      >
+    </firebase-query>
+
+
     <div class="card">
-      <div class="circle">3</div>
-      <h1>View Three</h1>
-      <p>Modus commodo minimum eum te, vero utinam assueverit per eu.</p>
-      <p>Ea duis bonorum nec, falli paulo aliquid ei eum.Has at minim mucius aliquam, est id tempor laoreet.Pro saepe pertinax ei, ad pri animal labores suscipiantur.</p>
+
+       <x-data-source data-source="{{dataSource}}"></x-data-source>
+
+       <vaadin-grid  active-item="{{activeItem}}" items="{{dataSource}}">
+
+         <template class="row-details">
+          <div class="details">
+            <collection-details data="{{item}}">
+            </collection-details>
+          </div>
+        </template>
+
+           <vaadin-grid-column width="20%">
+             <template class="header">
+               <vaadin-grid-sorter path="$key">ID</vaadin-grid-sorter>
+               <vaadin-grid-filter path="$key" value="[[_filterKey]]">
+                 <input  placeholder="Key" value="{{_filterKey::input}}">
+               </vaadin-grid-filter>
+             </template>
+             <template>[[item.$key]]</template>
+           </vaadin-grid-column>
+           <vaadin-grid-column width="15%">
+             <template class="header">
+               <vaadin-grid-sorter path="province">Provincia
+               </vaadin-grid-sorter>
+               <vaadin-grid-filter path="province" value="[[_filterProvince]]">
+                 <input  placeholder="Provincia" value="{{_filterProvince::input}}">
+               </vaadin-grid-filter>
+              </template>
+             <template>[[item.province]]</template>
+           </vaadin-grid-column>
+
+         <vaadin-grid-column width="15%">
+           <template class="header">Districto
+              <vaadin-grid-filter path="district" value="[[_filterFirstName]]">
+                <input  placeholder="Districto" value="{{_filterFirstName::input}}">
+              </vaadin-grid-filter>
+          </template>
+           <template>[[item.district]]</template>
+         </vaadin-grid-column>
+
+         <vaadin-grid-column width="15%">
+           <template class="header">Localidade</template>
+           <template>[[item.locality]]</template>
+         </vaadin-grid-column>
+
+         <vaadin-grid-column width="10%">
+           <template class="header">Data</template>
+           <template>[[getDate(item.timestamp)]]</template>
+         </vaadin-grid-column>
+
+         <vaadin-grid-column width="15%">
+           <template class="header">Collector email</template>
+           <template>[[item.collectorId]]</template>
+         </vaadin-grid-column>
+
+         <vaadin-grid-column width="10%">
+            <template class="header">Accoes</template>
+            <template>
+              <paper-checkbox checked="{{expanded}}">Details</paper-checkbox>
+            </template>
+          </vaadin-grid-column>
+       </vaadin-grid>
+
     </div>
   </template>
 
   <script>
     Polymer({
       is: 'my-view3',
+      properties:{
+        dataSource: {
+          type: Array,
+          notify:true,
+        //  computed:'getDate(date)'
+        },
+        activeItem: {
+           observer: '_activeItemChanged'
+         },
+        path:{
+          type: String,
+          value:'households'
+        }
+      },
+      getDate: function(date){
+        var mom=moment(date).format('M/D/YYYY');
+        return mom;
+      }
     });
   </script>
 </dom-module>

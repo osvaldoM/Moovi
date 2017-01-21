@@ -20,6 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="collection-details.html">
+<script src="../bower_components/moment/moment.js"></script>
 
 <dom-module id="my-view2">
   <template>
@@ -89,7 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <!-- <paper-input id="filterProvince" label="Filtrar por provincia"></paper-input> -->
             <vaadin-combo-box
               id="filterProvinceC"
-              label="Element"
+              label="Provincia"
               items='["nampula", "maputo", "cabo delgado", "niassa", "zambezia", "tete","sofala","manica","gaza","inhambane"]'
               value="Bromine">
             </vaadin-combo-box>
@@ -121,11 +122,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <h3> selccionar periodo </h3>
                 <iron-grid>
                     <div class="s4">
-                      <vaadin-date-picker label="inicio">
+                      <vaadin-date-picker i8n="" id="filterStartDate" label="inicio">
                     </div>
 
                       <div class="s4">
-                        <vaadin-date-picker label="fim">
+                        <vaadin-date-picker id="filterEndDate" label="fim">
                       </div>
 
                 </iron-grid>
@@ -164,9 +165,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <col name="$key" sortable/>
             <col name="province" sortable/>
             <col name="locality" sortable/>
-            <col name="collector_id" sortable/>
+            <col name="collectorId" sortable/>
             <col name="timestamp" sortable/>
-            <col />
+            <col name="accoes"/>
           </colgroup>
           <thead>
         <tr>
@@ -229,11 +230,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Array,
           notify:true,
           observer: 'dataChanged',
-          computed:'_updateHouseholds(household)'
+
         },
         path:{
           type: String,
-          value:'house_holds'
+          value:'households'
         },
         selectedCollection:{
           type:Object,
@@ -243,12 +244,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         }
       },
-     _details:function(window){
+     _details:function(window,selectedIndex){
        //had to wait 100ms bcoz clicked row fires  the selected  event before updating selectedIndex
       var that=this;
        window.setTimeout(function(){
-         console.log(that);
-         var selectedIndex=that.$.simple.selection.selected();
+        // var selectedIndex=that.$.simple.selection.selected();
          that.selectedCollection=that.households[selectedIndex]
          var body = document.querySelector('body');
          Polymer.dom(body).appendChild(that.$.detailsDialog);
@@ -256,11 +256,88 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        },100)
 
      },
+     dataChanged:function(){
+      //  console.log('change');
+      //  console.log(this.households);
+     },
 
-      updateHouseholds: function(household){
+      _updateHouseholds: function(household){
         console.log('hh'+household)
       },
       ready: function() {
+
+         //format date
+             var newI18n={
+                  // An array with the full names of months starting
+                  // with January.
+                  monthNames: [
+                    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
+                    'Junho', 'Julho', 'Agosto', 'Septembero',
+                    'Otubro', 'Novembero', 'Decembero'
+                  ],
+
+                  // An array of weekday names starting with Sunday. Used
+                  // in screen reader announcements.
+                  weekdays: [
+                    'Domingo', 'Segunda', 'Terça', 'Quarta',
+                    'Quinta', 'Sexta', 'Sabado'
+                  ],
+
+                  // An array of short weekday names starting with Sunday.
+                  // Displayed in the calendar.
+                  weekdaysShort: [
+                    'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'
+                  ],
+
+                  // An integer indicating the first day of the week
+                  // (0 = Sunday, 1 = Monday, etc.).
+                  firstDayOfWeek: 0,
+
+                  // Used in screen reader announcements along with week
+                  // numbers, if they are displayed.
+                  week: 'Semana',
+
+                  // Translation of the Calendar icon button title.
+                  calendar: 'Calendario',
+
+                  // Translation of the Clear icon button title.
+                  clear: 'Limpar',
+
+                  // Translation of the Today shortcut button text.
+                  today: 'Hoje',
+
+                  // Translation of the Cancel button text.
+                  cancel: 'Cancelar',
+
+                  // A function to format given `Date` object as
+                  // date string.
+                  formatDate: function(d) {
+                    // returns a string representation of the given
+                    // Date object in 'MM/DD/YYYY' -format
+                    //return moment(d).format('D/M/YYYY')
+                  },
+
+                  // A function to parse the given text to a `Date`
+                  // object. Must properly parse (at least) text
+                  // formatted by `formatDate`.
+                  // Setting the property to null will disable
+                  // keyboard input feature.
+                  parseDate: function(text) {
+                    // Parses a string in 'MM/DD/YY', 'MM/DD' or 'DD' -format to
+                    // a Date object
+                  },
+
+                  // A function to format given `monthName` and
+                  // `fullYear` integer as calendar title string.
+                  formatTitle: function(monthName, fullYear) {
+                    return monthName + ' ' + fullYear;
+                  }
+
+                };
+    var datepicker = this.$.filterStartDate;
+    //datepicker.set('i18n', newI18n);
+
+        //grid options
           var grid = this.$.simple;
           var households = this.households;
           var that=this;
@@ -274,19 +351,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             button.style="background-color:#ff9500;color:#ffffff;"
                             //console.log('lohhing this');
                             //console.log(this);
-                            button.addEventListener('click',that._details.bind(that,window))
+                            button.addEventListener('click',that._details.bind(that,window,cell.row.index))
                             cell.element.appendChild(button);
 
                             var el = cell.element;
                             var data = cell.data;
 
-                            // button.addEventListener('click', function() {
-                            //   var div = document.createElement('div');
-                            //   div.innerHTML = data;
-                            //   el.appendChild(div);
-                            // });
                           }
                         };
+
+                        grid.columns[4].renderer = function(cell) {
+                            if (cell.element.childNodes.length === 0) {
+                              var data = cell.data;
+                              var mom=moment(data).format('M/D/YYYY, h:mm:ssa');
+                              cell.element.textContent=mom;
+                              //
+                              // var span = document.createElement('span');
+                              // span.style="overflow: hidden; text-overflow: ellipsis;"
+                              // span.innerHTML=mom;
+
+                              //cell.element.appendChild(span);
+
+                            }
+                          };
           })
 
                 grid.addEventListener('sort-order-changed', function() {
@@ -326,6 +413,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         //     });
         //   });
 
+          function toTimestamp(strDate){
+              var datum = Date.parse(strDate);
+              return datum/1000;
+            }
           var filterInputC =  this.$.filterProvinceC;
             filterInputC.addEventListener('value-changed', function() {
               var filterText = filterInputC.value.toLowerCase();
@@ -353,14 +444,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var filterCollector =  this.$.filterCollector;
               filterCollector.addEventListener('value-changed', function() {
                 var filterText = filterCollector.value.toLowerCase();
+                console.log(filterText);
                 grid.items = households.filter(function(val) {
                   if (filterText) {
-                    return (val.collector_id.toLowerCase()).indexOf(filterText) > -1;
+                    return (val.collectorId.toLowerCase()).indexOf(filterText) > -1;
                   } else {
                     return true;
                   }
                 });
               });
+              var filterStartDate =  this.$.filterStartDate;
+                filterStartDate.addEventListener('value-changed', function() {
+                  var filterText =filterStartDate.value;
+                  grid.items = households.filter(function(val) {
+                    console.log('compare '+filterText+' with  '+moment(val.timestamp)); //.format('M/D/YYYY'));
+                    console.log(moment(val.timestamp).isAfter(filterText));
+                    if (filterText) {
+                      return  moment(val.timestamp).isAfter(filterText);
+                    } else {
+                      return true;
+                    }
+                  });
+                });
+                var filterEndDate =  this.$.filterEndDate;
+                  filterEndDate.addEventListener('value-changed', function() {
+                    var filterText = filterEndDate.value.toLowerCase();
+                    grid.items = households.filter(function(val) {
+                      if (filterText) {
+                        return moment(filterText).isAfter(val.timestamp);
+                      } else {
+                        return true;
+                      }
+                    });
+                  });
 
       }
     });

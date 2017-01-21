@@ -1,0 +1,161 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="elements/iron-grid/iron-grid.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="shared-styles.html">
+
+
+<dom-module id="members-details">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2}
+    </style>
+
+
+      <firebase-query
+        id="query"
+        app-name="Carecollector"
+        data="{{members}}"
+        family="{{familyName}}"
+
+        >
+      </firebase-query>
+
+      <h4>Membros da familia {{familyName}} </h4>
+      <table style="width:100%" >
+        <tr>
+            <th>
+              ID
+            </th>
+            <th>
+              Primeiro nome
+            </th>
+            <th>
+              Genero
+            </th>
+            <th>
+              Data de nascimento
+            </th>
+            <th>
+              É deficiente
+            </th>
+            <th>
+               
+            </th>
+        </tr>
+        <template is="dom-repeat" items="{{loadedMembers}}">
+
+        <tr>
+          <td>
+             <span>{{item.documentId}}</span>
+          </td>
+          <td>
+           <span>{{item.firstName}}</span>
+          </td>
+          <td>
+             <span>{{item.gender}}</span>
+          </td>
+          <td>
+               <span>{{item.birthDate}}</span>
+          </td>
+          <td>
+               <span>{{item.hasDisabilities}}</span>
+          </td>
+          <td>
+            <template is="dom-if" if="{{item.houseLeader}}">
+              <span style="color:#ff9500"> Leader </span>
+            </template>
+          </td>
+
+        </tr>
+
+      </template>
+      </tr>
+      </table>
+
+        </template>
+
+  <script>
+    Polymer({
+      is: 'members-details',
+      properties:{
+        path:{
+          type: String,
+          value:'members/',
+          notify:true
+        },
+        members:{
+          type:Array,
+          notify:true,
+          observer:'watchMembers'
+        },
+        loadedMembers:{
+          type:Array,
+          notify: true,
+          value:[],
+          observer:'membersLoaded'
+        },
+        familyName:{
+          type:String,
+          notify:true
+        }
+    },
+    membersLoaded: function(){
+      console.log('changed');
+      console.log(this.loadedMembers);
+    },
+    loadMembers: function(){
+        console.log('loaded'+this.loadedMembers);
+        var obj=this.members;
+        var that=this;
+        for(let member in obj){
+          if (obj.hasOwnProperty(member)) {
+              //use query.db here
+              console.log(this.path+member);
+              this.$.query.db.ref(this.path+member).once('value').then(function(snapshot) {
+                  that.push('loadedMembers',snapshot.val());
+                // ...
+              });
+
+              // this.$.query.ref.once('value').then(function(snapshot) {
+              //     console.log(snapshot.name);
+              //   // ...
+              // });
+              // this.$.query.save(this.path+'/'+member)
+              // console.log(this.path+'/'+member);
+              //doc.save('/users/' + this.user.uid + '/models');
+          }
+        }
+      },
+      watchMembers: function(){
+        console.log('watching');
+        console.log(this.members);
+        this.loadMembers();
+      },
+    attached:function(){
+    }
+    });
+  </script>
+</dom-module>

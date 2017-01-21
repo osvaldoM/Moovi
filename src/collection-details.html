@@ -1,78 +1,163 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="elements/iron-grid/iron-grid.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="members-details.html">
 <link rel="import" href="shared-styles.html">
 
 
 <dom-module id="collection-details">
   <template>
-    <style include="shared-styles">
-      :host {
-        display: block;
+  <style include="shared-styles">
+  :host {
+    display: block;
 
-        padding: 10px;
-      }
-    </style>
+    padding: 10px;
 
 
-      <firebase-query
-        id="query"
-        app-name="Carecollector"
-        path="{{path}}/"
-        data="{{members}}"
-        >
-      </firebase-query>
+  }
+  paper-button{
+    /*height: 12px;
+    width: 12px;*/
+    /*padding: 1px;
+    margin: 1px;*/
 
-      <h1>details for Collection {{data.$key}} </h1>
-      <iron-grid>
-        <div class="s6">
-      <paper-listbox selected="0">
-        <paper-item>id : {{data.$key}}</paper-item>
-        <paper-item>Familia : {{family_name}}</paper-item>
-        <paper-item>Provincia : {{data.province}}</paper-item>
-        <paper-item>Districto : {{data.district}}</paper-item>
-        <paper-item>Localidade {{data.locality}} </paper-item>
-        <paper-item>Oficial : {{data.collector_id}}</paper-item>
-        <paper-item>Data {{data.timestamp}} </paper-item>
+  }
 
-      </paper-listbox>
-        </div>
-        <div class="s6">
-          <paper-listbox selected="0">
-            <paper-item>Has INASS assistance {{data.inassAssistance}} </paper-item>
-            <paper-item>Has defficienct members {{data.hasDeficientMembers}} </paper-item>
-            <paper-item>Family Leader : {{data.leaderId}}</paper-item>
-            <paper-item>Nr of members {{data.membersCount}} </paper-item>
-            <paper-item>Females count : {{data.femalesCount}}</paper-item>
-            <paper-item>Males count : {{data.malesCount}}</paper-item>
 
-          </paper-listbox>
-        </div>
-      </iron-grid>
-  </template>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
 
-  <script>
-    Polymer({
-      is: 'collection-details',
-      properties:{
-        data:{
-          type:Object,
-        notify:true
-      },
-      path:{
-        type: String,
-        value:'members'
-      },
+  th, td {
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(odd){background-color: #f2f2f2}
+  </style>
+
+
+  <firebase-query
+  id="query"
+  app-name="Carecollector"
+  path="{{path}}"
+  data="{{members}}"
+  familyName="{familyName}"
+
+  >
+</firebase-query>
+
+<paper-dialog id="membersDialog" class="" modal="true">
+  <members-details members="{{members}}">
+  </members-details>
+
+  <div class="buttons">
+    <paper-button dialog-confirm autofocus>close</paper-button>
+  </div>
+</paper-dialog>
+
+<h4>Details for Family {{data.familyName}} </h4>
+<table  >
+  <tr>
+    <td>
+      <paper-item>id : {{data.$key}}</paper-item>
+    </td>
+    <td>
+      <paper-item>Districto : {{data.district}}</paper-item>
+    </td>
+    <td>
+      <paper-item>Data de recolha: {{getDate(data.timestamp)}} </paper-item>
+
+    </td>
+    <td>
+      <paper-item>Family Leader : {{data.leaderId}}</paper-item>
+
+    </td>
+    <td>
+      <paper-item>Males count : {{data.malesCount}}</paper-item>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <paper-item>Familia : {{data.familyName}}</paper-item>
+    </td>
+    <td>
+      <paper-item>Localidade: {{data.locality}} </paper-item>
+    </td>
+    <td>
+      <paper-item>Possui assistenica do INASS: {{data.inassAssistance}} </paper-item>
+
+    </td>
+    <td>
+      <paper-item>Nr of members {{data.membersCount}} </paper-item>
+    </td>
+
+  </tr>
+  <tr>
+    <td>
+      <paper-item>Provincia : {{data.province}}</paper-item>
+
+    </td>
+    <td>
+      <paper-item>Oficial : {{data.collectorId}}</paper-item>
+    </td>
+    <td>
+      <paper-item>Membros deficientes: {{data.disabilityMembersCount}} </paper-item>
+    </td>
+    <td>
+      <paper-item>Females count : {{data.femalesCount}}</paper-item>
+    </td>
+    <td>
+      <paper-item><paper-button id="showMembers" raised style="background-color:#ff9500;color:#ffffff;"autofocus>Membros</paper-button></paper-item>
+    </td>
+
+  </tr>
+
+</table>
+
+</template>
+
+<script>
+Polymer({
+  is: 'collection-details',
+  properties:{
+    data:{
+      type:Object,
+      notify:true,
+      observer: ''
     },
-    attached:function(){
-      console.log('aa'+this.data.provincia);
+    members:{
+      type: Array,
+      notify:true
+    },
+
+    familyName:{
+      type:String,
+      notify:true
     }
-    });
-  </script>
+  } ,
+  getDate: function(date){
+    var mom=moment(date).format('M/D/YYYY, h:mm:ssa');
+    return mom;
+  },
+  ready: function(){
+    this.$.showMembers.addEventListener('click',function(){
+      this.members=this.data.houseHoldMembers;
+      this.familyName=this.data.familyName;
+      var body = document.querySelector('body');
+      Polymer.dom(body).appendChild(this.$.membersDialog);
+      this.$.membersDialog.open();
+    }.bind(this));
+
+  }
+});
+</script>
 </dom-module>
