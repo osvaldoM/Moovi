@@ -1,0 +1,120 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="elements/iron-grid/iron-grid.html">
+<link rel="import" href="../bower_components/google-chart/google-chart.html">
+
+<dom-module id="my-view4">
+  <template>
+  <style include="shared-styles">
+  :host {
+    display: block;
+
+    padding: 10px 20px;
+  }
+  </style>
+
+
+  <firebase-query
+  id="query"
+  app-name="Carecollector"
+  path="{{path}}"
+  data="{{members}}"
+
+
+  >
+</firebase-query>
+
+<iron-grid>
+  <div class="s4">
+    <h4>Total of members:<span style="color:#ff9500">{{members.length}}</span> </h4>
+
+    <google-chart
+    id="chart"
+    type='pie'
+    options='{"title": "Distribution of members by gender"}'
+    cols='[{"label":"Gender", "type":"string"}, {"label":"Percentagem", "type":"number"}]'
+    data="{{dataTable}}"
+    rows='{{rows}}'>
+  </google-chart>
+</div>
+<div class="s4">
+
+
+</div>
+<div class="s4">
+
+</div>
+</iron-grid>
+
+
+</template>
+
+
+
+<script>
+Polymer({
+  is: 'my-view4',
+  properties:{
+    members:{
+      type:Array,
+      notify:true
+    },
+    path:{
+      type:String,
+      value:'members'
+    },
+    dataTable:{
+      type:Object,
+      notify:true
+    }
+  },
+  _membersChange: function(items){
+    //console.log(items);
+    var query=this.$.query;
+    if(query.transactionsComplete){
+      console.log('watching'+this.members.length);
+    }
+    //console.log(this.members);
+    //this.calcRows(this.members);
+
+  },
+  calcRows: function(data){
+    var rows=[];
+    var males=0;
+    var females=0;
+    for(let i=0;i<data.length;i++){
+      if(data[i].gender=='M'){
+        males++;
+      }
+      else {
+        females++;
+      }
+    }
+    //this row identifies the aolumn names and type
+    var columnsRow=[{"label":"Gender", "type":"string"}, {"label":"Percentagem", "type":"number"}]
+    rows.push(columnsRow);
+    rows.push(['male',males])
+    rows.push(['female',females]);
+    this.dataTable=google.visualization.arrayToDataTable(rows);
+  },
+  observers: [
+    // '_membersChange(members.splices)'
+  ],
+  ready: function(){
+    var that=this;
+    this.$.query.db.ref(this.path).once('value').then(function(snapshot) {
+      that.calcRows(that.members);
+  });
+}
+});
+</script>
+</dom-module>

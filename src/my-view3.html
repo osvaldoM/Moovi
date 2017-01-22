@@ -139,13 +139,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app-name="Carecollector"
     path="{{path}}"
     data="{{dataSource}}"
-    log
+
     >
   </firebase-query>
 
 
   <div class="card" >
-    <h1> Lista de familias</h1>
+    <h1> Lista de f</h1>
     <div>
       <h3> selccionar periodo </h3>
       <iron-grid>
@@ -266,13 +266,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var filterTextTo = filterEndDate.value.toLowerCase();
           grid.items = households.filter(function(val) {
             // console.log('compare '+filterText+' with  '+moment(val.timestamp).toString()); //.format('M/D/YYYY'));
-            console.log(moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom));
-            if(filterTextFrom && filterTextTo){
+            if(filterTextFrom!=='' && filterTextTo!==''){
+              console.log(1);
+              console.log((moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom) && moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo)));
               return  (moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom) && moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo));
             }
-            else if (filterTextFrom) {
+            else if (filterTextFrom!=='') {
+              console.log(moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom));
               return  moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom);
+            }
+            else if (filterTextTo!=='') {
+              console.log(moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo));
+              return moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo);
             } else {
+              console.log('filterTextFrom '+filterTextFrom);
               return true;
             }
           });
@@ -282,13 +289,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var filterTextTo = filterEndDate.value.toLowerCase();
           var filterTextFrom =filterStartDate.value.toLowerCase();
           grid.items = households.filter(function(val) {
-            console.log(moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo));
-            if(filterTextFrom && filterTextTo){
+            if(filterTextFrom!=='' && filterTextTo!==''){
+              console.log(3);
+              console.log((moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom) && moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo)));
               return  (moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom) && moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo));
             }
-            else if (filterTextTo) {
+            else if (filterTextTo!=='') {
+              console.log(moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo));
               return moment(val.timestamp).clone().subtract(1, 'days').isBefore(filterTextTo);
+            }
+            else if (filterTextFrom!=='') {
+              console.log(moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom));
+              return  moment(val.timestamp).clone().add(1, 'days').isAfter(filterTextFrom);
             } else {
+
+                console.log('filterTextTo '+filterTextTo);
               return true;
             }
           });
